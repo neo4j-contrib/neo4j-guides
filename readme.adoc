@@ -1,0 +1,27 @@
+== Convert of Asciidoc Files to Neo4j Browser Guides
+
+It uses AsciiDoctor erb templates to generate the outline html and then for each level-2 header a slide.
+
+=== Create HTML
+
+----
+./run.sh path/to/a_guide.adoc [guide.html]
+
+-> html/a_guide.html
+----
+
+=== Start Local Server
+
+It is patched to allow CORS headers for the browser, to serve the html directory.
+
+----
+python http.py &
+----
+
+In the browser then run
+
+----
+:play http://localhost:8000/html/a_guide.html
+----
+
+You can find more details on how to create guides and their format in link:docs/remote-guides.md[] and an example in link:docs/remote.html[]

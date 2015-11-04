@@ -1,0 +1,50 @@
+<style type="text/css" media="screen">
+/*
+.nodes-image {
+	margin:-100;
+}
+*/	
+    .imageblock .content img {
+        max-width: 900px;
+        max-height: 300px;
+    }
+	.deck h3 {
+		display: block !important;
+		margin-bottom:8px;
+		margin-top:5px;
+	}
+	.listingblock {
+		margin:8px;
+	}
+	.pull-bottom {
+		position:relative;
+		bottom:1em;
+	}
+</style>
+<style type="text/css" media="screen">
+#editor.maximize-editor .CodeMirror-code {
+ font-size:40px;
+ line-height:45px;
+}
+</style><article class="guide">
+  <carousel class="deck container-fluid">
+    <!--slide class="row-fluid">
+      <div class="col-sm-3">
+        <h3><%= doctitle(:sanitize => true) || (attr 'untitled-label') || 'Neo4j GraphGist'%></h3>
+        <p class="lead">Information</p>
+			<!dl>
+				<%
+				[:description, :keywords, :author, :copyright].each do |key|
+				  if attr? key %><dt><%= key %>"</dt><dd><%= attr key %></dd><% end %>
+				<% end %>
+			</dl>
+		</div>
+      <div class="col-sm-9">
+        <figure>
+          <img style="width:300px" src="<%= attr :image%>"/>
+        </figure>
+      </div>
+    </slide-->
+    <%= content %>
+  </carousel>
+</article>
