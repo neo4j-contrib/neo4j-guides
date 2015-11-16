@@ -1,4 +1,4 @@
-echo "Usage ./run.sh OR ./run.sh path/to/a_guide.adoc [guide.html]"
+echo "Usage ./run.sh OR ./run.sh path/to/a_guide.adoc [guide.html] [+1 (header-offset)]"
 BASE_URL=http://guides.neo4j.com/intro
 mkdir -p html
 OFFSET=${3-+1}
