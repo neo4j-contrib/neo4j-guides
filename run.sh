@@ -1,14 +1,15 @@
 echo "Usage ./run.sh OR ./run.sh path/to/a_guide.adoc [guide.html]"
 BASE_URL=http://guides.neo4j.com/intro
 mkdir -p html
+OFFSET=${3-+1}
 
 function render {
    ADOC=${1-../exercise/lab_01.adoc}
-   HTML=${ADOC%%.adoc}.html
+   HTML=${ADOC%%.*}.html
    HTML=${HTML##*/}
    HTML=${2-$HTML}
-   
-   asciidoctor $ADOC -T templates -a guides=$BASE_URL -a current=$BASE_URL -a img=$BASE_URL/img -a leveloffset=+1 -a guide= -o html/${HTML}
+   echo rendering $ADOC to html/$HTML   
+   asciidoctor $ADOC -T templates -a guides=$BASE_URL -a current=$BASE_URL -a img=$BASE_URL/img -a leveloffset=${OFFSET} -a guide= -o html/${HTML}
 }
 
 if [ $# == 0 ]; then
