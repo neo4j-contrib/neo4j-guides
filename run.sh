@@ -1,3 +1,5 @@
+asciidoctor -v || gem install asciidoctor 
+
 echo "Usage ./run.sh OR ./run.sh path/to/a_guide.adoc [guide.html] [+1 (header-offset)]"
 BASE_URL=http://guides.neo4j.com/intro
 mkdir -p html
@@ -5,7 +7,7 @@ OFFSET=${3-+1}
 
 function render {
    ADOC=${1-../exercise/lab_01.adoc}
-   HTML=${ADOC%%.*}.html
+   HTML=${ADOC%.*}.html
    HTML=${HTML##*/}
    HTML=${2-$HTML}
    echo rendering $ADOC to html/$HTML   
