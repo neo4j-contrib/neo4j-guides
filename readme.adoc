@@ -18,10 +18,14 @@ It is patched to allow CORS headers for the browser, to serve the html directory
 python http.py &
 ----
 
+You have to edit `conf/neo4j-server.properties` (for enterprise) to set `dbms.browser.remote_content_hostname_whitelist=*` and restart.
+You can also add the specific `localhost:8001` address. 
+For neo4j-community you have to run the http script on port 80.
+
 In the browser then run
 
 ----
-:play http://localhost:8000/html/a_guide.html
+:play http://localhost:8001/html/a_guide.html
 ----
 
 You can find more details on how to create guides and their format in link:docs/remote-guides.md[] and an example in link:docs/remote.html[]
