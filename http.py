@@ -9,7 +9,7 @@ class CORSRequestHandler (SimpleHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET')
         self.send_header('Access-Control-Allow-Headers', '*')
-        self.send_header('Access-Control-Allow-Headers', 'Pragma,Cache-Control,If-Modified-Since,Content-Type,X-Requested-With,X-stream')
+        self.send_header('Access-Control-Allow-Headers', 'Pragma,Cache-Control,If-Modified-Since,Content-Type,X-Requested-With,X-stream,X-Ajax-Browser-Auth')
         SimpleHTTPRequestHandler.end_headers(self)
 
     def do_OPTIONS(self):
