@@ -2,7 +2,7 @@
 :author: Neo Technology
 :twitter: neo4j
 :tags: Recommendation, Graph Based Search
-:neo4j-version: 2.1
+:neo4j-version: 3.0
 
 === Introduction
 
@@ -13,7 +13,6 @@ We want to demonstrate how easy it is to model a domain as a graph and answer qu
 Graph Based Search and Discovery is prominent a use-case for graph databases like http://neo4j.com[Neo4j].
 
 Here we use a Domain of restaurants which serve cuisines and are located in a City.
-
 
 The domain diagram was created with the http://www.apcjones.com/arrows/#[Arrows tool]
 
@@ -60,7 +59,7 @@ The domain diagram was created with the http://www.apcjones.com/arrows/#[Arrows 
 CREATE (philip:Person {name:"Philip"})-[:IS_FRIEND_OF]->(emil:Person {name:"Emil"}),
        (philip)-[:IS_FRIEND_OF]->(michael:Person {name:"Michael"}),
        (philip)-[:IS_FRIEND_OF]->(andreas:Person {name:"Andreas"})
-create (sushi:Cuisine {name:"Sushi"}), (nyc:City {name:"New York"}),
+CREATE (sushi:Cuisine {name:"Sushi"}), (nyc:City {name:"New York"}),
        (iSushi:Restaurant {name:"iSushi"})-[:SERVES]->(sushi),(iSushi)-[:LOCATED_IN]->(nyc),
        (michael)-[:LIKES]->(iSushi),
        (andreas)-[:LIKES]->(iSushi),
@@ -102,7 +101,6 @@ We want to answer the following question
 Find Sushi Restaurants in New York that my friends like.
 ""
 
-
 To satisfy this question, we have to know who's asking: _Philip_ and he's asking for 4 connected facts
 
 * _People_ that are friends of _Philip_
@@ -117,7 +115,7 @@ MATCH (philip:Person {name:"Philip"}),
       (restaurant:Restaurant)-[:LOCATED_IN]->(:City {name:"New York"}),
       (restaurant)-[:SERVES]->(:Cuisine {name:"Sushi"}),
       (friend)-[:LIKES]->(restaurant)
-RETURN restaurant.name, collect(friend.name) as likers, count(*) as occurence
+RETURN restaurant.name, collect(friend.name) AS likers, count(*) AS occurence
 ORDER BY occurence DESC
 ----
 
