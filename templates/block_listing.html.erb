@@ -28,6 +28,8 @@ if @style == 'source'
   pre_class << "pre-scrollable"
   pre_class << "code"
   pre_class << "runnable"
+  pre_class << "standalone-example"
+  pre_class << "ng-binding" 
   pre_class << 'nowrap' if nowrap %>
 <pre mode="cypher" <%= pre_class.empty? ? nil : %( class="#{pre_class * ' '}") %><%= pre_lang && %( lang="#{pre_lang}") %>><code<%= code_class.empty? ? nil : %( class="#{code_class * ' '}") %>><%= content %></code></pre><%
 else %>
