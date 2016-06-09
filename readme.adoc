@@ -15,7 +15,7 @@ This program uses AsciiDoctor erb templates to generate an outline html and a sl
 It is patched to allow CORS headers for the browser to serve the HTML directory.
 
 ----
-python http.py &
+python http-server.py &
 ----
 
 You have to edit `conf/neo4j-server.properties` (for enterprise) to set `dbms.browser.remote_content_hostname_whitelist=*` and restart.
