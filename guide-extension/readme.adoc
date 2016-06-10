@@ -51,11 +51,10 @@ This is the core idea of exposing static web resources under the mountpoint.
 [source,java]
 ----
 @GET
-@Path("{file:(?i).+\\.(png|jpg|jpeg|svg|gif|html?|js|css|txt)}")
+@Path("{file:(?i).+\\.(png|jpg|jpeg|svg|gif|html?|js|css|txt|grass)}")
 public Response file(@PathParam("file") String file) throws IOException {
     InputStream fileStream = findFileStream(file);
     if (fileStream == null) return Response.status(Response.Status.NOT_FOUND).build();
     else return Response.ok(fileStream, mediaType(file)).build();
 }
 ----
-
