@@ -31,9 +31,9 @@ public class StaticWebResource {
         if (path == null) path = "guides";
         File file = new File(path);
 		this.directory = file.exists() ? file : null;
-		
+
 	}
-	
+
     @Path("/")
     @Produces("text/html")
     @GET
@@ -44,7 +44,7 @@ public class StaticWebResource {
     static Map<String,File> resources = new ConcurrentHashMap<>();
 
     @GET
-    @Path("{file:(?i).+\\.(png|jpg|jpeg|svg|gif|html?|js|css|txt)}")
+    @Path("{file:(?i).+\\.(png|jpg|jpeg|svg|gif|html?|js|css|txt|grass)}")
     public Response file(@PathParam("file") String file) throws IOException {
         InputStream fileStream = findFileStream(file);
         if (fileStream == null) return Response.status(Response.Status.NOT_FOUND).build();
