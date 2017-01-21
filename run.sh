@@ -1,3 +1,4 @@
+#!/bin/bash
 asciidoctor -v || gem install asciidoctor 
 
 echo "Usage ./run.sh OR ./run.sh path/to/a_guide.adoc [guide.html] [+1 (header-offset)] [http://guide-host:port]"
