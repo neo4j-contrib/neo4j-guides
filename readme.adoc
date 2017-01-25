@@ -18,7 +18,12 @@ It is patched to allow CORS headers for the browser to serve the HTML directory.
 python http-server.py &
 ----
 
-You have to edit `conf/neo4j-server.properties` (for enterprise) to set `dbms.browser.remote_content_hostname_whitelist=*` and restart.
+=== Configuration
+
+* before Neo4j 3.0 add `dbms.browser.remote_content_hostname_whitelist=*` to `conf/neo4j-server.properties` 
+* from Neo4j 3.0 add `browser.remote_content_hostname_whitelist=*` to `conf/neo4j.conf` 
+
+and restart.
 You can also add the specific `localhost:8001` address.
 
 For `neo4j-community` you have to use `sudo` and run the http script on port 80.
