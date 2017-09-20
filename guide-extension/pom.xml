@@ -3,13 +3,13 @@
     <groupId>org.neo4j</groupId>
     <artifactId>neo4j-guide-extension</artifactId>
     <packaging>jar</packaging>
-    <version>3.0.1</version>
+    <version>3.2.3</version>
     <name>Neo4j-Web</name>
     <description>Neo4j Web Extension</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.7.6</slf4j.version>
-        <neo4j.version>3.0.1</neo4j.version>
+        <neo4j.version>3.2.3</neo4j.version>
         <jersey.version>1.19</jersey.version>
     </properties>
 

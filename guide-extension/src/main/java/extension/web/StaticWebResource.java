@@ -27,7 +27,7 @@ public class StaticWebResource {
 
 	public StaticWebResource(@Context Config configuration, @Context WebServer server) {
 
-        String path = configuration.getParams().get("org.neo4j.server.guide.directory");
+        String path = configuration.getRaw().get("org.neo4j.server.guide.directory");
         if (path == null) path = "guides";
         File file = new File(path);
 		this.directory = file.exists() ? file : null;
