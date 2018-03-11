@@ -1,0 +1,199 @@
+= Query Template
+
+:nodeLabelA: pass:a[`<span value-key="nodeLabelA">Person</span>`]
+:propertyKeyA: pass:a[`<span value-key="propertyKeyA">name</span>`]
+:propertyValueA: pass:a['<span value-key="propertyValueA">Keanu Reeves</span>']
+:nodeLabelB: pass:a[`<span value-key="nodeLabelB">Movie</span>`]
+:propertyKeyB: pass:a[`<span value-key="propertyKeyB">title</span>`]
+:propertyValueB: pass:a['<span value-key="propertyValueB">The Matrix</span>']
+:depth: pass:a[<span value-key="depth">3</span>]
+:relationshipType: pass:a[`<span value-key="relationshipType">ACTED_IN</span>`]
+
+== Create Nodes
+
+include::template-table.adoc[]
+
+// .Create Node A 
+// {nodeLabelA}
+[source,cypher,subs=attributes]
+----
+CREATE (a:{nodeLabelA} { {propertyKeyA}: {propertyValueA} }) RETURN a
+----
+
+// .Create Node B 
+// {nodeLabelB}
+[source,cypher,subs=attributes]
+----
+CREATE (b:{nodeLabelB} { {propertyKeyB}: {propertyValueB} }) RETURN b
+----
+
+== Create Relationship
+
+include::template-table.adoc[]
+
+// .Relate {nodeLabelA} via {relationshipType} to {nodeLabelB}
+[source,cypher,subs=attributes]
+----
+MATCH (a:{nodeLabelA} { {propertyKeyA}: {propertyValueA} }) 
+MATCH (b:{nodeLabelB} { {propertyKeyB}: {propertyValueB} })
+CREATE (a)-[:{relationshipType}]->(b)
+RETURN *
+----
+
+== Merge Nodes
+
+include::template-table.adoc[]
+
+// .Merge Node {nodeLabelA}
+[source,cypher,subs=attributes]
+----
+MERGE (a:{nodeLabelA} { {propertyKeyA}: {propertyValueA} }) RETURN a
+----
+
+// .Merge Node {nodeLabelB}
+[source,cypher,subs=attributes]
+----
+MERGE (b:{nodeLabelB} { {propertyKeyB}: {propertyValueB} }) RETURN b
+----
+
+== Merge Relationship
+
+include::template-table.adoc[]
+
+//.Relate {nodeLabelA} via {relationshipType} to {nodeLabelB}
+[source,cypher,subs=attributes]
+----
+MERGE (a:{nodeLabelA} { {propertyKeyA}: {propertyValueA} }) 
+MERGE (b:{nodeLabelB} { {propertyKeyB}: {propertyValueB} })
+MERGE (a)-[:{relationshipType}]->(b)
+RETURN *
+----
+
+== Find Nodes
+
+include::template-table.adoc[]
+
+// .Find Node {nodeLabelA}
+[source,cypher,subs=attributes]
+----
+MATCH (a:{nodeLabelA} { {propertyKeyA}: {propertyValueA} }) RETURN a
+----
+
+// .Find Node {nodeLabelB}
+[source,cypher,subs=attributes]
+----
+MATCH (b:{nodeLabelB} { {propertyKeyB}: {propertyValueB} }) RETURN b
+----
+
+== Find All Nodes
+
+include::template-table.adoc[]
+
+// .Find All Nodes {nodeLabelA}
+[source,cypher,subs=attributes]
+----
+MATCH (a:{nodeLabelA}) RETURN a LIMIT 100
+----
+
+// .Find All Nodes {nodeLabelB}
+[source,cypher,subs=attributes]
+----
+MATCH (b:{nodeLabelB}) RETURN b LIMIT 100
+----
+
+== Find Neighbours
+
+include::template-table.adoc[]
+
+// .Find Neighbours of {nodeLabelA}
+[source,cypher,subs=attributes]
+----
+MATCH (a:{nodeLabelA} { {propertyKeyA}: {propertyValueA} })-[:{relationshipType}]->(b) RETURN * LIMIT 100
+----
+
+// .Find Neighbours of {nodeLabelB}
+[source,cypher,subs=attributes]
+----
+MATCH (b:{nodeLabelB} { {propertyKeyB}: {propertyValueB} })<--(a) RETURN * LIMIT 100
+----
+
+== Find Network
+
+include::template-table.adoc[]
+
+// .Find {depth}-degree Network of {nodeLabelA}
+[source,cypher,subs=attributes]
+----
+MATCH path = (:{nodeLabelA} { {propertyKeyA}: {propertyValueA} })-[:{relationshipType}*1..3]-() RETURN path LIMIT 50
+----
+
+// .Find {depth}-degree Network of {nodeLabelB}
+[source,cypher,subs=attributes]
+----
+MATCH path = (:{nodeLabelB} { {propertyKeyB}: {propertyValueB} })-[*1..3]-() RETURN path LIMIT 50;
+----
+
+== Find Network
+
+include::template-table.adoc[]
+
+// .Find Shortest Path between {nodeLabelA} and {nodeLabelB}
+[source,cypher,subs=attributes]
+----
+MATCH path = shortestPath((a:{nodeLabelA} { {propertyKeyA}: {propertyValueA} })-[*]-(b:{nodeLabelB} { {propertyKeyB}: {propertyValueB} })) RETURN path LIMIT 50;
+----
+
+== Create Unique Constraints
+
+include::template-table.adoc[]
+
+// .Create Constraint for {nodeLabelA}
+[source,cypher,subs=attributes]
+----
+CREATE CONSTRAINT ON (a:{nodeLabelA}) ASSERT a.{propertyKeyA} IS UNIQUE;
+----
+
+// .Create Constraint for {nodeLabelB}
+[source,cypher,subs=attributes]
+----
+CREATE CONSTRAINT ON (b:{nodeLabelB}) ASSERT b.{propertyKeyB} IS UNIQUE;
+----
+
+== Create Indexes
+
+include::template-table.adoc[]
+
+// .Create Index for {nodeLabelA}
+[source,cypher,subs=attributes]
+----
+CREATE INDEX ON :{nodeLabelA}({propertyKeyA});
+----
+
+// .Create Index for {nodeLabelB}
+[source,cypher,subs=attributes]
+----
+CREATE INDEX ON :{nodeLabelB}({propertyKeyB});
+----
+
+== Create Existence Constraints
+
+include::template-table.adoc[]
+
+// .Create Existence Constraint for {nodeLabelA}
+[source,cypher,subs=attributes]
+----
+CREATE CONSTRAINT ON (a:{nodeLabelA}) ASSERT exists(a.{propertyKeyA});
+----
+
+// .Create Existence Constraint for {nodeLabelB}
+[source,cypher,subs=attributes]
+----
+CREATE CONSTRAINT ON (b:{nodeLabelB}) ASSERT exists(b.{propertyKeyB});
+----
+
+== More Documentation
+
+* http://neo4j.com/docs/developer-manual/[Neo4j Developer Manual^]
+* http://neo4j.com/developer/get-started/[Neo4j Developer Guides^]
+* https://neo4j.com/docs/cypher-refcard/[Cypher Reference Card^]
+
