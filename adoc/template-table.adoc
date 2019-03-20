@@ -1,0 +1,22 @@
+[cols="7", opts="headers"]
+|===
+
+| Label
+| Property
+| Value
+| Relationship
+| Label
+| Property
+| Value
+
+| pass:a[<input value-for="nodeLabelA" class="form-control" value="Person">]
+| pass:a[<input value-for="propertyKeyA" class="form-control" value="name">]
+| pass:a[<input value-for="propertyValueA" class="form-control" value="Keanu Reeves">]
+         
+| pass:a[<input value-for="relationshipType" class="form-control" value="ACTED_IN">]
+         
+| pass:a[<input value-for="nodeLabelB" class="form-control" value="Movie">]
+| pass:a[<input value-for="propertyKeyB" class="form-control" value="title">]
+| pass:a[<input value-for="propertyValueB" class="form-control" value="The Matrix">]
+         
+|===
