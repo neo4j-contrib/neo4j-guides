@@ -4,29 +4,26 @@
 	margin:-100;
 }
 */	
-    .imageblock .content img {
-        max-width: 900px;
-        max-height: 300px;
-    }
-	.deck h3 {
-		display: block !important;
-		margin-bottom:8px;
-		margin-top:5px;
-	}
-	.listingblock {
-		margin:8px;
-	}
-	.pull-bottom {
-		position:relative;
-		bottom:1em;
-	}
+@import url("//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css");
+
+.slide { min-height: 50em !important; }
+.imageblock .content img, .image img {max-width: 900px;max-height: 300px;}
+.deck > h3, .deck > h4 {display: block !important;margin-bottom:8px;margin-top:5px;}
+.listingblock {margin:8px;}
+pre.code.runnable { max-height: 10em;}
+.pull-bottom {position:relative;bottom:1em;}
+.admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
+.admonitionblock td.icon .icon-note:before{content:"\f05a";color:#19407c}
+.admonitionblock td.icon .icon-tip:before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
+.admonitionblock td.icon .icon-warning:before{content:"\f071";color:#bf6900}
+.admonitionblock td.icon .icon-caution:before{content:"\f06d";color:#bf3400}
+.admonitionblock td.icon .icon-important:before{content:"\f06a";color:#bf0000}
+.admonitionblock.note.speaker { display:none; }
 </style>
 <style type="text/css" media="screen">
-#editor.maximize-editor .CodeMirror-code {
- font-size:40px;
- line-height:45px;
-}
-</style><article class="guide">
+/* #editor.maximize-editor .CodeMirror-code { font-size:24px; line-height:26px; } */
+</style>
+<article class="guide" ng-controller="AdLibDataController"  style="min-height:1000px;">
   <carousel class="deck container-fluid">
     <!--slide class="row-fluid">
       <div class="col-sm-3">
@@ -49,17 +46,18 @@
     
 
 
+   <h4 style="margin-top: 1em;margin-bottom: 1em;">Restaurant Recommendations</h4>
    
 
 
 <slide class="row-fluid">
   <div class="col-sm-12">
-    <h3>Introduction</h3>
+    <h3 style="margin-bottom: 0.3em;">Introduction</h3>
     <br/>
     <div>
-      <div class="imageblock" style="float: right">
+      <div class="imageblock" style="float: right;">
 <div class="content">
-<img src="https://dl.dropboxusercontent.com/u/14493611/sushi_restaurants_nyc.svg" alt="sushi restaurants nyc" height="300">
+<img src="https://guides.neo4j.com/sushi_restaurants_nyc.svg" alt="sushi restaurants nyc" height="300">
 </div>
 </div>
 <div class="paragraph">
@@ -82,20 +80,20 @@
 
 <slide class="row-fluid">
   <div class="col-sm-12">
-    <h3>Setup: Creating Friends, Restaurants in Cities and their Cusines</h3>
+    <h3 style="margin-bottom: 0.3em;">Setup: Creating Friends, Restaurants in Cities and their Cusines</h3>
     <br/>
     <div>
       <div class="listingblock">
 <div class="content">
-<pre mode="cypher"  class="highlight pre-scrollable code runnable"><code class="cypher language-cypher">CREATE (philip:Person {name:"Philip"})-[:IS_FRIEND_OF]-&gt;(emil:Person {name:"Emil"}),
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CREATE (philip:Person {name:"Philip"})-[:IS_FRIEND_OF]-&gt;(emil:Person {name:"Emil"}),
        (philip)-[:IS_FRIEND_OF]-&gt;(michael:Person {name:"Michael"}),
        (philip)-[:IS_FRIEND_OF]-&gt;(andreas:Person {name:"Andreas"})
-create (sushi:Cuisine {name:"Sushi"}), (nyc:City {name:"New York"}),
+CREATE (sushi:Cuisine {name:"Sushi"}), (nyc:City {name:"New York"}),
        (iSushi:Restaurant {name:"iSushi"})-[:SERVES]-&gt;(sushi),(iSushi)-[:LOCATED_IN]-&gt;(nyc),
        (michael)-[:LIKES]-&gt;(iSushi),
        (andreas)-[:LIKES]-&gt;(iSushi),
        (zam:Restaurant {name:"Zushi Zam"})-[:SERVES]-&gt;(sushi),(zam)-[:LOCATED_IN]-&gt;(nyc),
-       (andreas)-[:LIKES]-&gt;(zam)</code></pre>
+       (andreas)-[:LIKES]-&gt;(zam)<!--/code--></pre>
 </div>
 </div>
 	</div>
@@ -106,13 +104,13 @@ create (sushi:Cuisine {name:"Sushi"}), (nyc:City {name:"New York"}),
 
 <slide class="row-fluid">
   <div class="col-sm-12">
-    <h3>Philips Friends</h3>
+    <h3 style="margin-bottom: 0.3em;">Philips Friends</h3>
     <br/>
     <div>
       <div class="listingblock">
 <div class="content">
-<pre mode="cypher"  class="highlight pre-scrollable code runnable"><code class="cypher language-cypher">MATCH (philip:Person {name:"Philip"})-[:IS_FRIEND_OF]-(person)
-RETURn person.name</code></pre>
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->MATCH (philip:Person {name:"Philip"})-[:IS_FRIEND_OF]-(person)
+RETURn person.name<!--/code--></pre>
 </div>
 </div>
 	</div>
@@ -123,13 +121,13 @@ RETURn person.name</code></pre>
 
 <slide class="row-fluid">
   <div class="col-sm-12">
-    <h3>Restaurants in NYC and their cusines</h3>
+    <h3 style="margin-bottom: 0.3em;">Restaurants in NYC and their cusines</h3>
     <br/>
     <div>
       <div class="listingblock">
 <div class="content">
-<pre mode="cypher"  class="highlight pre-scrollable code runnable"><code class="cypher language-cypher">MATCH (nyc:City {name:"New York"})&lt;-[:LOCATED_IN]-(restaurant)-[:SERVES]-&gt;(cusine)
-RETURN nyc, restaurant, cusine</code></pre>
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->MATCH (nyc:City {name:"New York"})&lt;-[:LOCATED_IN]-(restaurant)-[:SERVES]-&gt;(cusine)
+RETURN nyc, restaurant, cusine<!--/code--></pre>
 </div>
 </div>
 	</div>
@@ -140,12 +138,12 @@ RETURN nyc, restaurant, cusine</code></pre>
 
 <slide class="row-fluid">
   <div class="col-sm-12">
-    <h3>Graph Search Recommendation</h3>
+    <h3 style="margin-bottom: 0.3em;">Graph Search Recommendation</h3>
     <br/>
     <div>
-      <div class="imageblock" style="float: right">
+      <div class="imageblock" style="float: right;">
 <div class="content">
-<img src="https://dl.dropboxusercontent.com/u/14493611/sushi_restaurants_nyc.png" alt="sushi restaurants nyc" height="300">
+<img src="https://guides.neo4j.com/sushi_restaurants_nyc.png" alt="sushi restaurants nyc" height="300">
 </div>
 </div>
 <div class="paragraph">
@@ -161,31 +159,31 @@ RETURN nyc, restaurant, cusine</code></pre>
 <div class="paragraph">
 <p>To satisfy this question, we have to know who&#8217;s asking: <em>Philip</em> and he&#8217;s asking for 4 connected facts</p>
 </div>
-<div class="ulist">
+<div class="ulist" style="margin-bottom:.4em;">
 <ul>
 <li>
-<p><em>People</em> that are friends of <em>Philip</em></p>
+<em>People</em> that are friends of <em>Philip</em>
 </li>
 <li>
-<p><em>Restaurants</em> located in <em>New York</em></p>
+<em>Restaurants</em> located in <em>New York</em>
 </li>
 <li>
-<p><em>Restaurants</em> that server <em>Sushi</em></p>
+<em>Restaurants</em> that server <em>Sushi</em>
 </li>
 <li>
-<p><em>Restaurants</em> that his <em>Friends</em> like</p>
+<em>Restaurants</em> that his <em>Friends</em> like
 </li>
 </ul>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre mode="cypher"  class="highlight pre-scrollable code runnable"><code class="cypher language-cypher">MATCH (philip:Person {name:"Philip"}),
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->MATCH (philip:Person {name:"Philip"}),
       (philip)-[:IS_FRIEND_OF]-(friend),
       (restaurant:Restaurant)-[:LOCATED_IN]-&gt;(:City {name:"New York"}),
       (restaurant)-[:SERVES]-&gt;(:Cuisine {name:"Sushi"}),
       (friend)-[:LIKES]-&gt;(restaurant)
-RETURN restaurant.name, collect(friend.name) as likers, count(*) as occurence
-ORDER BY occurence DESC</code></pre>
+RETURN restaurant.name, collect(friend.name) AS likers, count(*) AS occurence
+ORDER BY occurence DESC<!--/code--></pre>
 </div>
 </div>
 	</div>

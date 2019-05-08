@@ -6,7 +6,7 @@
 
 === Introduction
 
-image::https://dl.dropboxusercontent.com/u/14493611/sushi_restaurants_nyc.svg[height=300,float=right]
+image::https://guides.neo4j.com/sushi_restaurants_nyc.svg[height=300,float=right]
 
 We want to demonstrate how easy it is to model a domain as a graph and answer questions in almost natural language.
 
@@ -93,7 +93,7 @@ RETURN nyc, restaurant, cusine
 
 === Graph Search Recommendation
 
-image::https://dl.dropboxusercontent.com/u/14493611/sushi_restaurants_nyc.png[height=300,float=right]
+image::https://guides.neo4j.com/sushi_restaurants_nyc.png[height=300,float=right]
 
 We want to answer the following question
 
