@@ -1,0 +1,100 @@
+= Intro to APOC
+:csv-url: https://raw.githubusercontent.com/neo4j-contrib/neo4j-apoc-procedures/4.0/src/test/resources/person.json
+:icons: font
+
+== Intro to APOC
+
+In this guide, we will see how to use the standard procedures and functions in the APOC library to assist in many activities with Neo4j.
+We will look at some of the most-used procedures, as well as some lesser known, and we will show how to navigate the library to find helpful procedures.
+
+Before we begin, though, we need to install the APOC library to operate with our Neo4j database instance.
+
+== Quick Check: Version compatibility matrix
+
+Since APOC relies in some places on Neo4j's internal APIs you need to use the right APOC version for your Neo4j installaton.
+
+APOC uses a consistent versioning scheme: `<neo4j-version>.<apoc>` version. 
+The trailing `<apoc>` part of the version number will be incremented with every apoc release.
+
+[opts=header]
+|===
+|apoc version | neo4j version
+| http://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/3.5.0.6[3.5.0.6^] | 3.5.12 (3.5.x)
+| http://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/3.4.0.4[3.4.0.6^] | 3.4.12 (3.4.x)
+| http://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/3.3.0.4[3.3.0.4^] | 3.3.6 (3.3.x)
+| http://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/3.2.3.6[3.2.3.6^] | 3.2.9 (3.2.x)
+|===
+
+Full versioning compatibility matrix on https://github.com/neo4j-contrib/neo4j-apoc-procedures#version-compatibility-matrix[APOC docs^].
+
+== Installation: Getting APOC
+
+We have a couple of options for installing APOC, depending on what type of Neo4j installation is running.
+
+1. *For Neo4j Desktop:* we can either install the built-in plugin in the `Project` or `Manage` database view OR we can http://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/{apoc-release}[download the jar^] from Github and drop it into the plugins directory.
+
+2. *For Docker:* The Neo4j Docker image allows to supply a volume for the /plugins folder.
+Download the APOC release fitting your Neo4j version to local folder plugins and provide it as a data volume:
+
+[source, cypher]
+----
+docker run --rm \
+--name neo4j \
+-e NEO4J_AUTH=neo4j/123 \
+-e NEO4J_ACCEPT_LICENSE_AGREEMENT==yes \
+-e apoc.import.file.enabled=true \
+-e NEO4J_LABS_PLUGINS=\[\"apoc\"\] \
+-p 7474:7474 \
+-p 7687:7687 \
+-v $PWD/data:/data \
+-v $PWD/import:/var/lib/neo4j/import \
+--user=$(id -u):$(id -g) \
+neo4j:4.0.0-enterprise
+----
+
+3. *For Other Installations:* we will need to http://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/{apoc-release}[download the jar^] from Github and place it in the $NEO4J_HOME/plugins folder.
+
+The https://neo4j.com/docs/operations-manual/current/configuration/file-locations/#file-locations-locations[Neo4j Manual^] contains more detail on file locations for both Desktop and other installations.
+
+== Test APOC installation
+
+To verify everything installed correctly and we are able to run the procedures, we can try to access the APOC help command.
+
+[source, cypher]
+----
+CALL apoc.help('')
+----
+
+This procedure lists the type (procedure or function), name, text description, signature (format and parameters with types), role, and writes.
+
+As another option, we can execute the `dbms.procedures()` command and count the procedures in the APOC package.
+
+[source, cypher]
+----
+CALL dbms.procedures() YIELD name
+RETURN head(split(name,".")) as package, count(*), collect(name) as procedures;
+----
+
+== Calling APOC in Cypher
+
+User defined functions can be used in any expression or predicate, just like built-in functions.
+
+Procedures can be called stand-alone with `CALL <procedure>.<name>();` syntax.
+You can also integrate them into your Cypher statements, which makes them much more powerful.
+
+Load JSON example:
+
+[source, cypher]
+----
+WITH 'https://raw.githubusercontent.com/neo4j-contrib/neo4j-apoc-procedures/4.0/src/test/resources/person.json' AS url
+CALL apoc.load.json(url) YIELD value as person
+MERGE (p:Person {name:person.name})
+   ON CREATE SET p.age = person.age, p.children = size(person.children)
+RETURN p
+----
+
+== Next Step
+
+In the next section, we are going to see how to use APOC to convert dates and times.
+
+pass:a[<a play-topic='{guides}/02_datetime.html'>Date &amp; Time Conversion</a>]

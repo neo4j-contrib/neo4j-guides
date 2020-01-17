@@ -1,0 +1,106 @@
+= Date & Time Conversion in APOC
+:csv-url: https://raw.githubusercontent.com/neo4j-meetups/modeling-worked-example/master/data/
+:icons: font
+
+== APOC Date & Time Conversion
+
+Neo4j supports date and temporal values, but often, we are dealing with differing date formats between systems or files.
+These can be difficult to express and translate without a few flexible procedures to handle converting one value formatting to another.
+
+APOC has several procedures for converting and formatting various date, time, and temporal values.
+They save valuable time in converting manually or creating a procedure from scratch!
+The full list of available procedures is in the https://neo4j.com/docs/labs/apoc/current/temporal/[APOC documentation^].
+
+== Converting dates from Integer to String
+
+The APOC `apoc.date.format()` takes an integer value for the date and converts it to a string in the desired format, including a custom one.
+This is commonly used when translating data from APIs, flat files, or even other databases and moving that data into or out of Neo4j.
+
+Format: `apoc.date.format(12345, ['ms'/'s'], ['yyyy/MM/dd HH:mm:ss'])`
+
+This procedure has 3 parameters - 
+
+1. the date integer value to convert
+2. how specific the first parameter is (`s` for seconds, `ms` for milliseconds)
+3. how we want the date string result to look
+
+=== apoc.date.format Example:
+
+[source, cypher]
+----
+WITH 1577793600 as dateInt //2019-12-31 12:00 in epoch seconds
+MERGE (p:Person {name: 'Jane Doe'})
+ SET p.birthdate = apoc.date.format(dateInt, 's', 'yyyy-MM-dd HH:mm:ss')
+RETURN p
+----
+
+In the example above, we have a date integer in seconds, and we want to create that as a typical birthdate format.
+To do that, we merge (uniquely create) our `Person` node and set the `birthdate` property equal to the converted date (using the procedure).
+
+In the return, we should see Jane's node with the name property and the formatted date!
+
+== Converting dates from String to Integer
+
+Let us do the reverse of what we just did on the previous slide by converting a string value to an integer with `apoc.date.parse()`.
+This is helpful for comparing date strings from and to various formats, most commonly in data import or export.
+
+Format: `apoc.date.parse('2019/03/25 03:15:59', ['ms'/'s'], ['yyyy/MM/dd HH:mm:ss'])`
+
+The procedure needs 3 parameters - 
+
+1. the date string that needs converted
+2. how specific the conversion should be (down to seconds `s` or milliseconds `ms`)
+3. what the format is of the date string (1st parameter)
+
+=== apoc.date.parse Example:
+
+[source, cypher]
+----
+WITH '2019-12-31' as dateStr
+MERGE (p:Person {name: 'John Doe'})
+ SET p.updatedOn = apoc.date.parse(dateStr, 's', 'yyyy-MM-dd')
+RETURN p
+----
+
+In our example, we are given a date string and want to specify an epoch time (date and time in seconds) for when a node was updated.
+We uniquely create (MERGE) our `Person` node and set the `updatedOn` property equal to the converted date (using the procedure).
+
+In the return, we should see John's node with the name property and the updated date in seconds!
+
+== Adding or subtracting units from timestamps
+
+In our day-to-day job, we might query logs to find any errors in the last 12 hours.
+Most logs store timestamps in epoch millisecond time formats (the Unix timestamp systems use), but these values do not make much sense to humans.
+How do we determine what the epoch time to find all the logs that occurred in the last 12 hours?
+
+We can use `apoc.date.add()` to take a point in time of epoch milliseconds (integer) and add or subtract a specified time value to find the desired timestamp.
+
+Format: `apoc.date.add(12345, 'ms', -365, 'd')`
+
+The procedure above contains 4 parameters - 
+
+1. the date integer for adding or subtracting
+2. how specific the date integer is (`s` for seconds, `ms` for milliseconds)
+3. the number to add or subtract from the date integer
+4. the unit type to add or subtract
+
+=== apoc.date.add Example:
+//NEED TO COME UP WITH SOME SAMPLE DATA!!!
+[source, cypher]
+----
+WITH <specific timestamp> as currentDatetime
+MATCH (l:Log)
+WHERE l.timestamp >= apoc.date.add(currentDatetime, 'ms', -12, 'h')
+RETURN l
+----
+
+In the example above, we first get the current date and time (Unix epoch time) to use as a parameter in our query.
+Then we search our database for `Log` nodes that have a timestamp value that is greater than or equal to the subtracted datetime.
+The `apoc.date.add` calculates it from the current datetime variable by subtracting 12 hours (the `-12` and `h` parameters) from it to retrieve the epoch time from 12 hours ago.
+
+In the return, we should see any log files for the last 12 hours.
+
+== Formatting calculated durations
+
+//blah
+`apoc.temporal.format( duration.between(<datetime1>, <datetime2>), 'HH:mm:ss.SSSS')`
