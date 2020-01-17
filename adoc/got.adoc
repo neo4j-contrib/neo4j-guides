@@ -1,0 +1,494 @@
+= Graph of Thrones
+:icons: font
+:img: https://guides.neo4j.com/got/img
+
+== The Graph of Thrones
+
+[subs=attributes]
+++++
+<div class="col-lg-8">
+<img src="{img}/got_header.png" class="img-responsive">
+</div>
+++++
+
+[subs=attributes]
+++++
+<div class="col-lg-4">
+<img src="{img}/graphs-are-coming.jpg" class="img-responsive">
+</div>
+++++
+
+
+== Analyzing Text
+
+image::{img}/AStormOfSwords.jpg[float=right]
+
+Most of this demo is based on work done by Dr. Andrew Beveridge, based on his https://networkofthrones.wordpress.com/[Network of Thrones^] research.
+
+Article: 
+https://www.macalester.edu/~abeverid/index.html[Beveridge, Andrew, Shan, Jie. Network of Thrones. Math Horizons Magazine, Vol. 23, No. 4 (2016) pp. 18-22.^]
+
+== Graph of Character Interactions
+
+image::{img}/char_cooccurence.png[float=right,width=300]
+
+Build a graph where each character of the story is a node and the relationships represent character interactions.
+
+____
+Link two characters each time their names (or nicknames) *appear within 15 words of one another*.
+
+Each link corresponds to an interaction between the two characters. 
+Note that this interaction could be direct or indirect. 
+Here are some of the types of interactions that our method picks up.
+
+* Two characters appearing together in the same location
+* Two characters in conversation
+* One character talking about another character
+* One character listening to a third character talk about a second character
+* A third character talking about two other characters
+____
+
+How the data was extracted from the books is described in detail here: https://networkofthrones.wordpress.com/from-book-to-network/
+
+== Character co-occurences data
+
+.Example data
+[options="header"]
+,===
+Source,Target,Weight
+
+Aemon,Grenn,5
+Aemon,Samwell,31
+Aerys,Jaime,18
+,===
+
+Source: https://github.com/mathbeveridge/asoiaf/blob/master/data/asoiaf-book3-edges.csv[Interactions for book 3: "A Storm of Swords"].
+
+The data for all 5 books is published here: https://github.com/mathbeveridge/asoiaf
+
+== Graph model
+
+[subs=attributes]
+++++
+<img src="{img}/datamodel.png" class="img-responsive">
+++++
+
+== Import
+
+[source,cypher]
+----
+CREATE CONSTRAINT ON (c:Character) ASSERT c.name IS UNIQUE;
+----
+
+We can import the co-occurences for all books first, which will also create all characters:
+
+[source,cypher]
+----
+LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/mathbeveridge/asoiaf/master/data/asoiaf-all-edges.csv" AS row
+MERGE (src:Character {name: row.Source})
+MERGE (tgt:Character {name: row.Target})
+// global relationship
+MERGE (src)-[r:INTERACTS]->(tgt) ON CREATE SET r.weight = toInteger(row.weight)
+----
+
+== Import Book Numbered Relationships
+
+Then for each of the books we can create a dedicated relationship, suffixed with the number of the book.
+
+[source,cypher]
+----
+LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/mathbeveridge/asoiaf/master/data/asoiaf-book1-edges.csv" AS row
+MATCH (src:Character {name: row.Source})
+MATCH (tgt:Character {name: row.Target})
+// relationship for the book
+MERGE (src)-[r:INTERACTS1]->(tgt) ON CREATE SET r.weight = toInt(row.weight), r.book=1
+----
+
+[source,cypher]
+----
+LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/mathbeveridge/asoiaf/master/data/asoiaf-book2-edges.csv" AS row
+MATCH (src:Character {name: row.Source})
+MATCH (tgt:Character {name: row.Target})
+// relationship for the book
+MERGE (src)-[r:INTERACTS2]->(tgt) ON CREATE SET r.weight = toInt(row.weight), r.book=2
+----
+
+[source,cypher]
+----
+LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/mathbeveridge/asoiaf/master/data/asoiaf-book3-edges.csv" AS row
+MATCH (src:Character {name: row.Source})
+MATCH (tgt:Character {name: row.Target})
+// relationship for the book
+MERGE (src)-[r:INTERACTS3]->(tgt) ON CREATE SET r.weight = toInt(row.weight), r.book=3
+----
+
+[source,cypher]
+----
+LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/mathbeveridge/asoiaf/master/data/asoiaf-book45-edges.csv" AS row
+MATCH (src:Character {name: row.Source})
+MATCH (tgt:Character {name: row.Target})
+// relationship for the book
+MERGE (src)-[r:INTERACTS45]->(tgt) ON CREATE SET r.weight = toInt(row.weight), r.book=45
+----
+
+== The data model
+
+We can review the data model our import statements created using the statement below.
+
+[source,cypher]
+----
+CALL db.schema()
+----
+
+== The Graph of Thrones
+
+Remember to switch auto-complete off in your Neo4j Browser settings before running this statement.
+
+[source,cypher]
+----
+MATCH p=(:Character)-[:INTERACTS]-(:Character)
+RETURN p
+LIMIT 50
+----
+
+== Analyzing The Network
+
+=== Number of characters
+
+796 Characters with 2823 interactions across all books.
+
+[source,cypher]
+----
+MATCH (c:Character) RETURN count(c)
+----
+
+Interactions per book
+
+[source,cypher]
+----
+MATCH ()-[r]->() 
+RETURN r.book as book, count(r) ORDER BY book 
+----
+
+== More Analyzing
+
+=== Summary statistics
+
+[source, cypher]
+----
+MATCH (c:Character)-[:INTERACTS]->()
+WITH c, count(*) AS num
+RETURN min(num) AS min, max(num) AS max, avg(num) AS avg_characters, stdev(num) AS stdev
+----
+
+Across all books:
+
+[source, cypher]
+----
+MATCH (c:Character)-[r]->()
+WITH r.book as book, c, count(*) AS num
+RETURN book, min(num) AS min, max(num) AS max, avg(num) AS avg_characters, stdev(num) AS stdev
+ORDER BY book
+----
+
+== Diameter of the network
+
+The diameter (or geodesic) of a network is defined as the longest shortest path in the network.
+
+[source,cypher]
+----
+// Find maximum diameter of network
+// maximum shortest path between two nodes
+MATCH (a:Character), (b:Character) WHERE id(a) > id(b)
+MATCH p=shortestPath((a)-[:INTERACTS*]-(b))
+WITH length(p) AS len, p
+ORDER BY len DESC LIMIT 4
+RETURN len, extract(x IN nodes(p) | x) AS path
+----
+
+== Shortest Path
+
+We can use the shortestPath function in Cypher to find the shortest path between any two characters in the graph.
+Let’s find the shortest path from Catelyn Stark to Khal Drogo:
+
+[source,cypher]
+----
+// Shortest path from Catelyn Stark to Khal Drogo
+MATCH (catelyn:Character {name:"Catelyn-Stark"}), (drogo:Character {name:"Drogo"})
+MATCH p=shortestPath((catelyn)-[:INTERACTS*]-(drogo))
+RETURN p
+----
+
+For only book 3 the path is much longer.
+
+[source,cypher]
+----
+// Shortest path from Catelyn Stark to Khal Drogo
+MATCH (catelyn:Character {name:"Catelyn-Stark"}), (drogo:Character {name:"Drogo"})
+MATCH p=shortestPath((catelyn)-[:INTERACTS3*]-(drogo))
+RETURN p
+----
+
+== All shortest paths
+
+There might be other paths of the same length connecting Catelyn and Drogo. 
+We can find these with the allShortestPaths Cypher function:
+
+[source,cypher]
+----
+// All shortest paths from Catelyn Stark to Khal Drogo
+MATCH (catelyn:Character {name:"Catelyn-Stark"}), (drogo:Character {name:"Drogo"})
+MATCH p=allShortestPaths((catelyn)-[:INTERACTS3*]-(drogo))
+RETURN p
+----
+
+== Pivotal Nodes
+
+A node is said to be pivotal if it lies on all shortest paths between two other nodes in the network. 
+We can find all pivotal nodes in the network.
+
+This runs for a bit, as it has to compute across the graph.
+
+[source,cypher]
+----
+// Find all pivotal nodes in network
+MATCH (a:Character), (b:Character) WHERE id(a) > id(b)
+MATCH p=allShortestPaths((a)-[:INTERACTS*..9]-(b)) WITH collect(p) AS paths, a, b
+UNWIND nodes(head(paths)) as c // first path
+WITH * WHERE NOT c IN [a,b] AND all(path IN tail(paths) WHERE c IN nodes(path))
+RETURN a.name, b.name, c.name AS PivotalNode, length(head(paths)) as pathLength, length(paths) as pathCount SKIP 490 LIMIT 10
+----
+
+[source,cypher]
+----
+MATCH (a:Character {name: "Drogo"}), (b:Character {name: "Ramsay-Snow"})
+MATCH p=allShortestPaths((a)-[:INTERACTS*]-(b))
+RETURN p
+----
+
+.Source: https://www.cs.cornell.edu/home/kleinber/networks-book/[Networks, Crowds, Markets^]
+
+== Centrality measures
+
+In graph theory and network analysis, indicators of centrality identify the most important vertices within a graph. 
+Applications include identifying the most influential person(s) in a social network, key infrastructure nodes in the Internet or urban networks, and super-spreaders of disease.
+
+This reproduces (partly) what Andrew Beveridge https://networkofthrones.wordpress.com/the-novels/[did for the novels^]
+
+We use the https://networkofthrones.wordpress.com/a-primer-on-network-analysis/[great explanations given by Andrew for the different network metrics^]
+
+== Degree Centrality
+
+____
+The degree centrality of a node is the number other nodes that are directly connected to it via a relationships. 
+This is just a raw count of the number of people that the character interacted with at least once.
+____
+
+[source,cypher]
+----
+MATCH (c:Character)
+RETURN c.name AS character, size( (c)-[:INTERACTS]-() ) AS degree 
+ORDER BY degree DESC
+----
+
+By book:
+
+[source,cypher]
+----
+MATCH (c:Character)
+UNWIND [1,2,3,45] as book
+WITH book, c.name AS character, size( (c)-[{book:book}]-() ) AS degree 
+RETURN character, collect([book,degree]) as degrees, max(degree) as maxDegree
+ORDER BY maxDegree DESC;
+----
+
+== Weighted Degree Centrality
+
+____
+The weighted degree centrality is the sum of the weights of the relationships of the node. 
+This is the total number of interactions involving the character.
+____
+
+[source,cypher]
+----
+MATCH (c:Character)-[r:INTERACTS]-()
+RETURN c.name AS character, sum(r.weight) AS weightedDegree 
+ORDER BY weightedDegree DESC LIMIT 100
+----
+
+By book:
+
+[source,cypher]
+----
+MATCH (c:Character)
+UNWIND [1,2,3,45] as book
+MATCH (c)-[r {book:book}]-()
+WITH book, c.name AS character, sum(r.weight) AS weightedDegree
+RETURN character, collect([book,weightedDegree]) as weightedDegrees, max(weightedDegree) as maxDegree
+ORDER BY maxDegree DESC;
+----
+
+== Neo4j Graph Algorithms
+
+The link:https://github.com/neo4j-contrib/neo4j-graph-algorithms[Neo4j Graph Algorithms library^] bundles several user-defined procedures for natively running graph algorithms in Neo4j. You can access the most recent Neo4j Graph Algorithms release https://github.com/neo4j-contrib/neo4j-graph-algorithms/releases[here^].
+
+=== Procedure Sandboxing
+
+As an additional security feature, procedures are sandboxed within Neo4j, restricting their access to the database. To use our graph algorithm procedures, we'll need to edit `neo4j.conf` and add:
+
+> dbms.security.procedures.unrestricted=*
+
+To give unrestricted access to all procedures.
+
+== Betweenness Centrality
+
+____
+Betweenness centrality identifies nodes that are strategically positioned in the network, meaning that information will often travel through those nodes. 
+Such an intermediary position gives that node power and influence. 
+Betweenness centrality is a raw count of the number of short paths that go through a given node. 
+For example, if a node is located on a bottleneck between two large communities, then it will have a high betweenness score.
+____
+
+image::{img}/betweenness-centrality.png[width=300]
+
+The red nodes have a high betweenness centrality and are cluster connectors.
+
+== Running betweenness on Game of Thrones
+
+We can run Betweenness Centrality using the `algo` package. This will calculate betweenness centrality for each node and set the `betweenness` property:
+
+[source,cypher]
+----
+CALL algo.betweenness('Character', 'INTERACTS', {write:true, writeProperty:"betweenness", stats:true})
+----
+
+Then, to find the characters with the highest betweenness centrality:
+
+[source,cypher]
+----
+MATCH (c:Character) WHERE exists(c.betweenness)
+RETURN c.name AS name, c.betweenness AS betweenness ORDER BY betweenness DESC LIMIT 25
+----
+
+== Closeness Centrality
+
+Nodes with high closeness centrality are often highly connected within clusters in the graph, but not necessarily highly connected outside of the cluster.
+
+Closeness centrality is the inverse of the average distance to all other characters in the network (farness).
+
+image::{img}/closeness-centrality.png[width=300]
+
+Nodes with high closeness centrality are connected to many other nodes in a network.
+
+== Running closeness on Game of Thrones
+
+[source,cypher]
+----
+MATCH (c:Character)
+WITH collect(c) AS characters
+CALL apoc.algo.closeness(['INTERACTS'], characters, 'BOTH') YIELD node, score
+RETURN node.name AS name, score 
+ORDER BY score DESC
+----
+
+== PageRank
+
+____
+This is another version of weighted degree centrality with a feedback loop. 
+This time, you get your “fair share” of your neighbor’s importance. 
+That is, your neighbor’s importance is split between their neighbors, proportional to the number of interactions with that neighbor. 
+
+Intuitively, PageRank understands that influence can be greater for nodes who are connected to other important nodes. 
+In our context, PageRank centrality nicely captures narrative tension. 
+Indeed, major developments occur when two important characters interact.
+____
+
+[source,cypher]
+----
+MATCH (c:Character) WITH collect(c) AS nodes
+CALL apoc.algo.pageRankWithConfig(nodes,{types:'INTERACTS'}) YIELD node, score
+RETURN node.name, score
+ORDER BY score DESC LIMIT 100
+----
+
+== Community Detection
+
+We can detect communities in our data by running an algorithm which traverses the graph structure to find highly connected subgraphs with fewer connections to other subgraphs.
+
+For the label propagation algorithm that is used in this implementation, we need to normalize our weight to a range of 0..1.
+For simplicity, we just normalize it on the max weight value.
+
+[source,cypher]
+----
+MATCH ()-[r:INTERACTS]->() WITH toFloat(max(r.weight)) as max
+MATCH ()-[r:INTERACTS]->() SET r.nweight = toFloat(r.weight) / max
+----
+
+== Running label propagation on Game of Thrones
+
+Run the algorithm
+
+[source,cypher]
+----
+CALL apoc.algo.community(25,['Character'],'community','INTERACTS','BOTH','nweight',10000);
+----
+
+Now we can run a query that retrieves the largest communities, groups characters by their community id, and then selects the people with the largest degrees as main ones.
+
+[source,cypher]
+----
+MATCH (c:Character)
+WITH c, c.community as community, size( (c)-[:INTERACTS]-() ) as degree ORDER BY community ASC, degree DESC
+WITH community, (head(collect(c))).name as main, count(*) as size, collect(c.name)[0..7] as characters, collect(c) as all
+ORDER BY size DESC
+FOREACH (c IN all | SET c.communityName = main)
+RETURN community, main, size, characters
+----
+
+== Visualizing algorithm results
+
+We could even label our character nodes with their community label and use it for visualizing.
+
+[source,cypher]
+----
+MATCH (c:Character)
+CALL apoc.create.addLabels(c,[c.communityName]) yield node
+RETURN count(*)
+----
+
+For example, we could show the top 50 characters and their connections:
+
+[source,cypher]
+----
+MATCH (c:Character) 
+WITH c ORDER BY size( (c)-[:INTERACTS]-() ) DESC LIMIT 50
+WITH collect(c) as characters
+RETURN [c IN characters | [ (c)-[r:INTERACTS]-(o) WHERE o IN characters AND r.weight > 30 | [c,r,o]]] as graph
+----
+
+image::{img}/got-community-interactions.jpg[]
+
+== Visualize characters by community
+
+With the latest APOC release we can even visually group our characters by `communityName`.
+
+[source,cypher]
+----
+CALL apoc.nodes.group(['Character'],['communityName'])
+----
+
+image::{img}/got-group-communities.jpg[]
+
+// CALL apoc.nodes.group(['Character'],['communityName'],['INTERACTS'])
+
+== Visualization
+
+image::{img}/graph-of-thrones.png[]
+
+Generated with https://github.com/johnymontana/neovis.js[neovis.js^].
+
+== Using Python igraph
+
+We can use Neo4j with Python data science tools, as well.
+
+Continue exploring Game of Thrones with Neo4j with this https://github.com/johnymontana/graph-of-thrones/blob/master/network-of-thrones.ipynb[iPython Notebook^].
