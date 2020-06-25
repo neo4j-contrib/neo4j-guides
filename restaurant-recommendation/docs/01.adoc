@@ -1,0 +1,49 @@
+= Restaurant Recommendations
+
+== Restaurant Recommendations
+
+Welcome to the Neo4j Applied Graph Data Science for Web Applications Training Course!
+
+In this guide we're going to get familiar with the Yelp dataset.
+Let's get started!
+
+== Graph Model
+
+This is the graph model that we'll be working with:
+
+image::sushi_restaurants_nyc.svg[height=300]
+
+== Setup: Creating Friends, Restaurants in Cities and their Cuisines
+
+[source,cypher]
+----
+CREATE (philip:Person {name:"Philip"})-[:IS_FRIEND_OF]->(emil:Person {name:"Emil"}),
+       (philip)-[:IS_FRIEND_OF]->(michael:Person {name:"Michael"}),
+       (philip)-[:IS_FRIEND_OF]->(andreas:Person {name:"Andreas"})
+CREATE (sushi:Cuisine {name:"Sushi"}), (nyc:City {name:"New York"}),
+       (iSushi:Restaurant {name:"iSushi"})-[:SERVES]->(sushi),(iSushi)-[:LOCATED_IN]->(nyc),
+       (michael)-[:LIKES]->(iSushi),
+       (andreas)-[:LIKES]->(iSushi),
+       (zam:Restaurant {name:"Zushi Zam"})-[:SERVES]->(sushi),(zam)-[:LOCATED_IN]->(nyc),
+       (andreas)-[:LIKES]->(zam)
+----
+
+== Philips Friends
+
+[source,cypher]
+----
+MATCH (philip:Person {name:"Philip"})-[:IS_FRIEND_OF]-(person)
+RETURn person.name
+----
+
+== Restaurants in NYC and their cusines
+
+[source,cypher]
+----
+MATCH (nyc:City {name:"New York"})<-[:LOCATED_IN]-(restaurant)-[:SERVES]->(cusine)
+RETURN nyc, restaurant, cusine
+----
+
+ifdef::env-guide[]
+pass:a[<a play-topic='{guides}/02.html'>Continue to Exercise 2: Graph Search Recommendation</a>]
+endif::[]

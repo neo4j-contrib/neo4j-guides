@@ -1,0 +1,30 @@
+= Restaurant Recommendations
+
+== Graph Search Recommendation
+
+image::sushi_restaurants_nyc.png[height=300]
+
+We want to answer the following question
+
+"" Find Sushi Restaurants in New York that my friends like.
+""
+
+== Find Relations
+
+To satisfy this question, we have to know who's asking: _Philip_ and he's asking for 4 connected facts
+
+* _People_ that are friends of _Philip_
+* _Restaurants_ located in _New York_
+* _Restaurants_ that server _Sushi_
+* _Restaurants_ that his _Friends_ like
+
+[source,cypher]
+----
+MATCH (philip:Person {name:"Philip"}),
+      (philip)-[:IS_FRIEND_OF]-(friend),
+      (restaurant:Restaurant)-[:LOCATED_IN]->(:City {name:"New York"}),
+      (restaurant)-[:SERVES]->(:Cuisine {name:"Sushi"}),
+      (friend)-[:LIKES]->(restaurant)
+RETURN restaurant.name, collect(friend.name) AS likers, count(*) AS occurence
+ORDER BY occurence DESC
+----

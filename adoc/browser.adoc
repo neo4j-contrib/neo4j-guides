@@ -1,5 +1,0 @@
-:experimental:
-
-== Get Started
-
-include::../../developer-resources/get-started/guide-neo4j-browser/guide-neo4j-browser.adoc[tags=guide]

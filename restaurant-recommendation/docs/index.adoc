@@ -1,0 +1,27 @@
+= Restaurant Recommendations
+:imagesdir: ../images
+
+== Restaurant Recommendations
+
+We want to demonstrate how easy it is to model a domain as a graph and answer questions in almost natural language.
+Graph Based Search and Discovery is prominent a use-case for graph databases like http://neo4j.com[Neo4j].
+Here we use a Domain of restaurants which serve cuisines and are located in a City.
+
+The domain diagram was created with the http://www.apcjones.com/arrows/#[Arrows tool].
+
+Here are the exercises you perform for this course:
+
+. pass:a[<a play-topic='{guides}/01.html'>Setup</a>]
+. pass:a[<a play-topic='{guides}/02.html'>Graph Search Recommendation</a>]
+
+== Further Resources
+
+* http://neo4j.com/graphgists[Graph Gist Examples]
+* http://neo4j.com/docs/stable/cypher-refcard/[Cypher Reference Card]
+* http://neo4j.com/docs/developer-manual/current/#cypher-query-lang[Neo4j Developer Manual]
+* http://neo4j.com/developer/resources#_neo4j_cypher_resources[Cypher Resource Collection]
+* http://graphdatabases.com[e-book: Graph Databases (free)]
+
+ifdef::env-guide[]
+pass:a[<a play-topic='{guides}/01.html'>Continue to Exercise 1: Setup</a>]
+endif::[]
