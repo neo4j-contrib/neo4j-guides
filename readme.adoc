@@ -1,38 +1,40 @@
 == Converting Asciidoc Files to Neo4j Browser Guides
 
-This program uses AsciiDoctor erb templates to generate an outline html and a slide for each level two header.
+This program uses AsciiDoctor ERB templates to generate an outline HTML and a slide for each level two header.
 
 === Create HTML
 
-----
-./run.sh path/to/a_guide.adoc [guide.html]
+The following command will convert the AsciiDoc files in _guide/docs_ to HTML:
 
--> html/a_guide.html
-----
+ $ ./gradlew convert
+
+The HTML files are available in the _build/browser-guide_ directory at the root of this repository.
 
 === Start Local Server
 
-It is patched to allow CORS headers for the browser to serve the HTML directory.
+In a new terminal, run the following command to start a local HTTP server:
 
+[source,console]
 ----
-python http-server.py &
-----
-
-=== Configuration
-
-* before Neo4j 3.0 add `dbms.browser.remote_content_hostname_whitelist=*` to `conf/neo4j-server.properties` 
-* from Neo4j 3.0 add `browser.remote_content_hostname_whitelist=*` to `conf/neo4j.conf` 
-
-and restart.
-You can also add the specific `localhost:8001` address.
-
-For `neo4j-community` you have to use `sudo` and run the http script on port 80.
-For example, use `BaseHTTPServer.HTTPServer(("0.0.0.0", 80),CORSRequestHandler).serve_forever()` in `http.py`
-
-To view the guides in the Neo4j Browser, run:
-
-----
-:play http://localhost:8001/html/a_guide.html
+$ ./gradlew httpServer
 ----
 
-You can find more details on how to create guides and their format in link:docs/remote-guides.md[] and an example in link:docs/remote.html[]
+=== View in Neo4j Browser
+
+To view this guide in the Neo4j Browser, type the following command in the action bar:
+
+----
+:play http://localhost:35729/browser-guide/restaurant_recommendation.html
+----
+
+[TIP]
+====
+You can use the `--continuous` flag to automatically convert the AsciiDoc files to HTML when the content is updated:
+
+[source,console]
+----
+$ ./gradlew convert --continuous
+----
+====
+
+You can find more details on how to create guides and their format at https://neo4j.com/developer/guide-create-neo4j-browser-guide/
