@@ -1,12 +1,13 @@
-== Restaurant Recommendations
+= Restaurant Recommendations
 :author: Neo Technology
 :twitter: neo4j
 :tags: Recommendation, Graph Based Search
 :neo4j-version: 3.0
+:imagesdir: ../img
 
-=== Introduction
+== Introduction
 
-image::https://guides.neo4j.com/sushi_restaurants_nyc.svg[height=300,float=right]
+image::sushi_restaurants_nyc.svg[height=300,float=right]
 
 We want to demonstrate how easy it is to model a domain as a graph and answer questions in almost natural language.
 
@@ -51,7 +52,7 @@ The domain diagram was created with the http://www.apcjones.com/arrows/#[Arrows 
 </ul>
 ////
 
-=== Setup: Creating Friends, Restaurants in Cities and their Cusines
+== Setup: Creating Friends, Restaurants in Cities and their Cusines
 
 //setup
 [source,cypher]
@@ -69,7 +70,7 @@ CREATE (sushi:Cuisine {name:"Sushi"}), (nyc:City {name:"New York"}),
 
 //graph
 
-=== Philips Friends
+== Philips Friends
 
 [source,cypher]
 ----
@@ -79,7 +80,7 @@ RETURn person.name
 
 //table
 
-=== Restaurants in NYC and their cusines
+== Restaurants in NYC and their cusines
 
 [source,cypher]
 ----
@@ -91,9 +92,9 @@ RETURN nyc, restaurant, cusine
 
 //graph_result
 
-=== Graph Search Recommendation
+== Graph Search Recommendation
 
-image::https://guides.neo4j.com/sushi_restaurants_nyc.png[height=300,float=right]
+image::sushi_restaurants_nyc.png[height=300,float=right]
 
 We want to answer the following question
 

@@ -1,0 +1,72 @@
+import org.asciidoctor.gradle.jvm.AsciidoctorTask
+import org.kordamp.gradle.livereload.LiveReloadTask
+
+plugins {
+  id 'org.asciidoctor.jvm.gems' version '3.1.0' apply true
+  id 'org.asciidoctor.jvm.convert' version '3.1.0' apply false
+  id 'org.kordamp.gradle.livereload' version '0.2.1' apply false
+}
+
+dependencies {
+  asciidoctorGems 'rubygems:rouge:3.18.0'
+}
+
+repositories {
+  mavenCentral()
+  jcenter()
+  ruby {
+    gems()
+  }
+}
+
+asciidoctorj {
+  gemPaths "${rootProject.buildDir}/.asciidoctorGems"
+  attributes 'allow-uri-read': '',
+    'source-highlighter': 'rouge',
+    'rouge-style': 'neo.forest',
+    'presenter': 'Neo Technology',
+    'twitter': 'neo4j',
+    'email': 'info@neotechnology.com',
+    'currentyear': '2020',
+    'experimental': ''
+}
+
+asciidoctorGemsPrepare.with {
+  outputDir = "${rootProject.buildDir}/.asciidoctorGems"
+}
+
+task convert(type: AsciidoctorTask) {
+  dependsOn asciidoctorGemsPrepare
+
+  inputs.dir "${projectDir}/templates"
+
+  asciidoctorj {
+    options template_dirs: ["${projectDir}/templates"]
+    attributes 'imagesdir': "http://localhost:35729/browser-guide/img",
+      'allow-uri-read': '',
+      'guides': "http://localhost:35729/browser-guide",
+      'icons': 'font',
+      'leveloffset': '+1',
+      'env-guide': '',
+      'guide': '',
+      'sectanchors': ''
+  }
+
+  resources {
+    from("img") {
+      include '**'
+      into 'img'
+    }
+  }
+
+  baseDir file("adoc")
+  sourceDir file("adoc")
+  sources {
+    include "restaurant_recommendation.adoc"
+  }
+  outputDir file("build/browser-guide")
+}
+
+task httpServer(type: LiveReloadTask) {
+  docRoot "build"
+}
