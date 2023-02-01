@@ -10,6 +10,18 @@ This program uses AsciiDoctor erb templates to generate an outline html and a sl
 -> html/a_guide.html
 ----
 
+Full options:
+
+[source,shell]
+----
+./run.sh /path/to/file.adoc [/path/to/file.html] [header-level-offset] [base-url] [additional asciidoc options]
+
+# for example for the recommendations sandbox-guide
+./run.sh ../recommendations/documentation/recommendations.adoc \
+         ../recommendations/documentation/recommendations.neo4j-browser-guide \
+         +1 https://guides.neo4j.com/sandbox/recommendations -a neo4j-version=5.4 -a env-guide
+----
+
 === Start Local Server
 
 It is patched to allow CORS headers for the browser to serve the HTML directory.
