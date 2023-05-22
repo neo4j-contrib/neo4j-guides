@@ -1,0 +1,5 @@
+rootProject.name = 'neo4j-guide'
+
+include 'restaurant-recommendation'
+project(':restaurant-recommendation').projectDir = file('restaurant-recommendation')
+
